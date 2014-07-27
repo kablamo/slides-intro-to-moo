@@ -311,15 +311,14 @@ package Alien;
 use Moo;
 use Tentacle;
 
-has tentacles      => (is => 'ro', builder => '_build_tentacles');
 has tentacle_count => (is => 'ro', default => sub { 5 });
+has tentacles      => (is => 'ro', builder => '_build_tentacles');
 
 sub _build_tentacles { 
   my $self = shift;
   my @tentacles;
 
-  push @tentacles, Tentacle->new()
-    for (1..$self->tentacle_count);
+  push @tentacles, Tentacle->new() for (1..$self->tentacle_count);
 
   return \@tentacles;
 }
@@ -341,8 +340,7 @@ sub _build_tentacles {
   my $self = shift;
   my @tentacles;
 
-  push @tentacles, Tentacle->new()
-    for (1..$self->tentacle_count);
+  push @tentacles, Tentacle->new() for (1..$self->tentacle_count);
 
   return \@tentacles;
 }
@@ -368,8 +366,16 @@ sub _build_tentacles {
           <h2>Scalar::Util</h2>
           <pre><code contenteditable>
 use Scalar::Util qw/looks_like_number/;
-has antenna       => (is => 'ro', isa => sub { ref(shift) eq 'Antenna'  });
-has antenna_count => (is => 'ro', isa => sub { looks_like_number(shift) });
+
+has antenna => (
+  is  => 'ro', 
+  isa => sub { ref(shift) eq 'Antenna'},
+);
+
+has antenna_count => (
+  is  => 'ro', 
+  isa => sub { looks_like_number(shift) },
+);
           </code></pre>
         </section>
 
@@ -485,16 +491,16 @@ $config_file->read(); # slurp in file contents
           <h2>Triggers</h2>
           <p>A code reference run after an attribute is set</p>
           <pre><code contenteditable>
-has cowboy => (is => 'ro', trigger => sub { warn "cowboy attr set"; });
+has cowboy => (
+  is      => 'ro', 
+  trigger => sub { warn "cowboy attr set"; }
+);
           </code></pre>
         </section>
 
 
         <section>
           <h2>Method modifiers: before</h2>
-          <p>Return value is ignored</p>
-          <p>Receives same params as the original method</p>
-          <p>Good for adding extra validation</p>
           <pre><code contenteditable>
 package Brontosaurus;
 extends 'Dinosaur';
@@ -505,14 +511,14 @@ before eat => sub {
   die "bad params" if $food eq 'meat';
 };
           </code></pre>
+          <p class="fragment">Receives same params as the original method</p>
+          <p class="fragment">Return value is ignored</p>
+          <p class="fragment">Good for adding extra validation</p>
         </section>
 
 
         <section>
           <h2>Method modifiers: after</h2>
-          <p>Return value is ignored</p>
-          <p>Receives same params as the original method</p>
-          <p>Good for logging/debugging</p>
           <pre><code contenteditable>
 package Brontosaurus;
 extends 'Dinosaur';
@@ -524,12 +530,14 @@ after eat => sub {
     if $food eq 'meat';
 };
           </code></pre>
+          <p class="fragment">Receives same params as the original method</p>
+          <p class="fragment">Return value is ignored</p>
+          <p class="fragment">Good for logging/debugging</p>
         </section>
 
 
         <section>
           <h2>Method modifiers: around</h2>
-          <p>Called instead of the original method</p>
           <pre><code contenteditable>
 package Brontosaurus;
 extends 'Dinosaur';
@@ -539,6 +547,7 @@ around eat => sub {
   uc $orig->($self, $food);
 };
           </code></pre>
+          <p class="fragment">Called instead of the original method</p>
         </section>
 
 
@@ -689,6 +698,9 @@ print "hi" if Thing->does('Searchable');
     <script src="js/reveal.min.js"></script>
     <script>
       Reveal.initialize({
+        //width:      1200, // default is 960
+        //height:     1200,  // default is 700
+        //margin:        0,
         controls:   true,
         progress:   true,
         history:    true,

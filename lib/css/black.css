@@ -7,6 +7,9 @@ pre code {
   padding: 1rem;
   padding-top: 0;
   padding-bottom: 0;
+  font-size: 1.3rem;
+  line-height: 1.4rem;
+  overflow: hidden;
 }
 
 .reveal code {

@@ -19,12 +19,15 @@ body {
   letter-spacing: -0.02em;
   color: #eeeeee; }
 
-  /*
 ::selection {
-  color: white;
+  color: #333;
   background: white;
   text-shadow: none; }
-  */
+
+:focus {
+  outline-color: #666;
+  outline-width: 1px;
+}
 
 /*********************************************
  * HEADERS
@@ -50,7 +53,7 @@ body {
  * LINKS
  *********************************************/
 .reveal a:not(.image) {
-  color: white;
+  color: #999;
   text-decoration: none;
   -webkit-transition: color .15s ease;
   -moz-transition: color .15s ease;
@@ -59,8 +62,8 @@ body {
   transition: color .15s ease; }
 
 .reveal a:not(.image):hover {
-  color: #f3d7ac;
   text-shadow: none;
+  text-decoration: underline;
   border: none; }
 
 .reveal .roll span:after {
@@ -106,16 +109,16 @@ body {
   border-top-color: white; }
 
 .reveal .controls div.navigate-left.enabled:hover {
-  border-right-color: #f3d7ac; }
+  border-right-color: #23b727; }
 
 .reveal .controls div.navigate-right.enabled:hover {
-  border-left-color: #f3d7ac; }
+  border-left-color: #23b727; }
 
 .reveal .controls div.navigate-up.enabled:hover {
-  border-bottom-color: #f3d7ac; }
+  border-bottom-color: #23b727; }
 
 .reveal .controls div.navigate-down.enabled:hover {
-  border-top-color: #f3d7ac; }
+  border-top-color: #23b727; }
 
 /*********************************************
  * PROGRESS BAR
