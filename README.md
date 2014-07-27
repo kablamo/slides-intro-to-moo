@@ -1,3 +1,5 @@
+![screenshot](https://raw.githubusercontent.com/kablamo/slides-2014-ddg-intro-to-moo/master/intro-to-moo.screenshot.png)
+
 # Introduction to Moo
 
 How to do OO with Moo in Perl.  Topics include:
