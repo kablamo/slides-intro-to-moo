@@ -58,8 +58,8 @@
             <li class="fragment">Sometimes people refuse to use Moose</li>
             <ol>
               <li class="fragment">XS dependencies</li>
-              <li class="fragment">Lots of dependencies on many CPAN modules</li>
               <li class="fragment">Slow startup time</li>
+              <li class="fragment">Some people are afraid of dependencies</li>
             </ol>
             <li class="fragment">Matt wanted an object system for all the places where Moose would not go</li>
           </ul>
@@ -70,8 +70,8 @@
           <h2>Moo features</h2>
           <ol>
             <li class="fragment">Moo is pure Perl (no XS)</li>
-            <li class="fragment">Moo has about 9 dependencies</li>
             <li class="fragment">Moo has a fast startup time</li>
+            <li class="fragment">Moo has about 9 dependencies</li>
             <li class="fragment">Moo is compatible with Moose (and Mouse)</li>
             <ul>
               <li class="fragment">Compatible syntax</li>
@@ -164,7 +164,7 @@ package Alien;
 use Moo;
 
 sub BUILD {
-    my ($self) = @_;
+    my ($self, $args) = @_;
    
     # -- additional validation or logging here --
 }
@@ -195,7 +195,7 @@ package Alien;
 use Moo;
 
 sub DEMOLISH {
-    my $self = shift;
+    my ($self, $in_global_destruction) = @_;
    
     $self->dbh->disconnect;
 }
@@ -285,6 +285,11 @@ has tentacles => (is => 'lazy');
           <pre><code contenteditable>
 has tentacles => (is => 'ro', lazy => 1, builder => '_build_tentacles');
           </code></pre>
+        </section>
+
+        <section>
+          <h2>Moo vs Moose</h2>
+          <p>Note that <code>is => 'lazy'</code> is not supported by Moose unless you use MooseX::Attributes</p>
         </section>
 
 
@@ -673,7 +678,7 @@ print "hi" if Thing->does('Searchable');
             <li>This talk is heavily based on Dave Rolsky's excellent <a href="http://www.houseabsolute.com/presentations/intro-moose-class/index.html">Intro to Moose talk</a></li>
             <li>Matt Trout's <a href="https://www.youtube.com/watch?v=MzTWTLaUZrg">Moo presentation</a> (video) for Mongueuers de Perl</li>
             <li>Matt Trout's <a href="https://www.youtube.com/watch?v=GzyvPqkNKYY">Moo guts presentation</a> at YAPC NA (video)</li>
-            <li>#moose on irc</li>
+            <li>#moose on irc.perl.org</li>
           </ul>
         </section>
 
