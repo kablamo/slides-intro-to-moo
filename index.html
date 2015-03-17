@@ -33,7 +33,7 @@
           <h1>Introduction<br>to Moo</h1>
           <h3>Perl objects with Moo</h3>
           <p>
-            <small><a href="http://kablamo.org">Eric Johnson</a> / <a href="http://twitter.com/hakimel">@kablamo_</a></small>
+            <small><a href="http://kablamo.org">Eric Johnson</a> / <a href="http://twitter.com/kablamo_">@kablamo_</a></small>
           </p>
         </section>
 
@@ -107,7 +107,7 @@ use Moo;
           <p>is equivalent to</p>
           <pre><code contenteditable>
 use strict;                   # strict vars, refs, subs
-use warnings FATAL => 'all';
+use warnings;                 # in Moo v2+
 no indirect;                  # can't do `my $alien = new Alien;`
 no multidimensional;          # can't do `$hash{1,2}`
 no bareword::filehandles;     # can't do `open FH, $filename`
@@ -351,41 +351,12 @@ sub _build_tentacles {
         <section>
           <h2>Types</h2>
           <ul>
-            <li class="fragment">Types are a bit up in the air atm.  Several choices:</li>
-            <ul>
-              <li class="fragment">Roll your own types using Scalar::Util</li>
-              <li class="fragment">MooX::Types::MooseLike</li>
-              <li class="fragment">Specio</li>
-              <li class="fragment">Type::Tiny - not marked stable, but has 50 upvotes</li>
-            </ul>
+            <li class="fragment">No solution that worked with both Moo and Moose until recently</li>
+            <li class="fragment">Type::Tiny has quickly become the community favorite</li>
+            <li class="fragment">Works with Moo</li>
+            <li class="fragment">Works with Moose</li>
+            <li class="fragment">Works with Mouse</li>
           </ul>
-        </section>
-
-
-        <section>
-          <h2>Scalar::Util</h2>
-          <pre><code contenteditable>
-use Scalar::Util qw/looks_like_number/;
-
-has antenna => (
-  is  => 'ro', 
-  isa => sub { ref(shift) eq 'Antenna'},
-);
-
-has antenna_count => (
-  is  => 'ro', 
-  isa => sub { looks_like_number(shift) },
-);
-          </code></pre>
-        </section>
-
-
-        <section>
-          <h2>MooX::Types::MooseLike</h2>
-          <pre><code contenteditable>
-use MooX::Types::MooseLike qw/:all/;
-has eyes => (is => 'ro', isa => Int);
-          </code></pre>
         </section>
 
 
@@ -397,37 +368,55 @@ has uri => (is => 'ro', isa => Uri);
 
 use Types::Standard -all;
 has is_from_mars => (is => 'ro', isa => Bool);
+has tentacles    => (is => 'ro', isa => ArrayRef[InstanceOf["Tentacle"]]);
           </code></pre>
         </section>
 
 
         <section>
-          <h2>Building types with Type::Tiny</h2>
+          <h2>Building a type library</h2>
           <pre><code contenteditable>
-use Scalar::Util qw(looks_like_number);
-use Type::Tiny;
- 
-my $NUM = "Type::Tiny"->new(
-   name       => "Number",
-   constraint => sub { looks_like_number($_) },
-   message    => sub { "$_ ain't a number" },
-); 
+package MyCompany::Types;
+use Type::Library -base;
+use Type::Utils -all;
 
-has eyes => (is => 'ro', isa => $NUM);
+BEGIN { extends "Types::Standard" };
+ 
+declare "PurpleTentacles",
+     as ArrayRef[InstanceOf["Tentacles"]],
+  where {
+            my $tentacles = $_;
+
+            for my $tentacle (@$tentacles) {
+                return 0 if $tentacle->color ne "purple";
+            }
+
+            return 1;
+        };
+
+          </code></pre>
+        </section>
+
+
+        <section>
+          <h2>How to use your type library</h2>
+          <pre><code contenteditable>
+use MyCompany::Types -all;
+has tentacles => (is => 'ro', isa => PurpleTentacles);
           </code></pre>
         </section>
 
 
         <section>
           <h2>Coercions</h2>
-          <p>Coercions are also a bit up in the air atm</p>
+          <p>No solution that worked with both Moose and Moo until recently</p>
           <p>Unlike Moose, coercions are separate from type checking</p>
           <pre><code contenteditable>
 package Client;
 use Moo;
 use URI;
 
-has uri => (is => 'ro', coerce => \&string_to_uri } );
+has uri => (is => 'ro', coerce => \&string_to_uri );
 
 sub string_to_uri {
   my $value = shift;
@@ -443,7 +432,53 @@ $client->uri->host;  # returns example.com
 
 
         <section>
-          <h2>Don't use types and coercions if you want to preserve the ability to switch from Moo to Moose</h2>
+          <h2>Coercions with Type::Tiny</h2>
+          <p>Type::Tiny Coercions come packaged with types (like in Moose)</p>
+          <pre><code contenteditable>
+package Client;
+use Moo;
+use Types::URI -all;
+
+has uri => (is => 'ro', isa => URI, coerce => 1);
+          </code></pre>
+          <pre><code contenteditable>
+my $client = Client->new( uri => 'http://example.com' );
+$client->uri->host;  # returns example.com
+          </code></pre>
+        </section>
+
+
+        <section>
+          <h2>Adding coercions<br>to your type library</h2>
+          <pre><code contenteditable>
+package MyCompany::Types;
+use Type::Library -base;
+use Type::Utils -all;
+
+BEGIN { extends "Types::Standard" };
+ 
+declare "Greeting",
+     as "Str",
+  where { $_ =~ /Take me to your leader.$/ };
+
+coerce "Greeting",
+  from "Str",
+   via { $_ .= '  Take me to your leader.' };
+          </code></pre>
+        </section>
+
+
+        <section>
+          <h2>Type::Tiny has many features</h2>
+          <p>Too many for me to cover here.  See also:</p>
+          <ul>
+            <li class=fragment><a href=https://metacpan.org/pod/Type::Tiny::Manual::UsingWithMoo>Type::Tiny::Manual::UsingWithMoo</a></li>
+            <li class=fragment><a href=https://metacpan.org/pod/Types::Standard>Types::Standard</a></li>
+            <li class=fragment><a href=https://metacpan.org/pod/Type::Tiny::Manual::Utils>Type::Tiny::Manual::Utils</a></li>
+            <li class=fragment><a href=https://metacpan.org/pod/Type::Tiny::Manual::Libraries>Type::Tiny::Manual::Libraries</a></li>
+            <li class=fragment><a href=https://metacpan.org/pod/Type::Tiny::Manual::Coercions>Type::Tiny::Manual::Coercions</a></li>
+            <li class=fragment><a href=https://metacpan.org/search?q=Types>Search for Types on MetaCPAN</a></li>
+          </ul>
         </section>
 
 
@@ -503,6 +538,7 @@ has cowboy => (
           <h2>Method modifiers: before</h2>
           <pre><code contenteditable>
 package Brontosaurus;
+use Moo;
 extends 'Dinosaur';
 
 before eat => sub {
@@ -521,6 +557,7 @@ before eat => sub {
           <h2>Method modifiers: after</h2>
           <pre><code contenteditable>
 package Brontosaurus;
+use Moo;
 extends 'Dinosaur';
 
 after eat => sub {
@@ -684,9 +721,10 @@ print "hi" if Thing->does('Searchable');
         <section>
           <h2>See also</h2>
           <ul>
-            <li>Dave Rolsky's <a href="http://www.houseabsolute.com/presentations/intro-moose-class/index.html">Intro to Moose talk</a></li> (from which this talk takes a great deal of inspiration)
+            <li>Dave Rolsky's <a href="http://www.houseabsolute.com/presentations/intro-moose-class/index.html">Intro to Moose talk</a> (slides)</li> from which this talk takes a great deal of inspiration
             <li>Matt Trout's <a href="https://www.youtube.com/watch?v=MzTWTLaUZrg">Moo presentation</a> (video) for Mongueuers de Perl</li>
             <li>Matt Trout's <a href="https://www.youtube.com/watch?v=GzyvPqkNKYY">Moo guts presentation</a> at YAPC NA (video)</li>
+            <li>Michael Hick's <a href="http://www.pl-enthusiast.net/2014/08/05/type-safety/">What is type safety?</a></li>
             <li>#moose on irc.perl.org</li>
           </ul>
         </section>
@@ -695,8 +733,8 @@ print "hi" if Thing->does('Searchable');
         <section>
           <h2>Find these slides online at</h2>
           <ul>
-            <li><a href="http://kablamo.org/slides-2014-ddg-intro-to-moo">kablamo.org/slides-2014-ddg-intro-to-moo</a></li>
-            <li><a href="https://github.com/kablamo/">github.com/kablamo</a></li>
+            <li><a href="http://kablamo.org/slides-intro-to-moo">kablamo.org/slides-intro-to-moo</a></li>
+            <li><a href="https://github.com/kablamo/slides-intro-to-moo">github.com/kablamo/slides-intro-to-moo</a></li>
           </ul>
         </section>
 
