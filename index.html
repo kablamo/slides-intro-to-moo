@@ -409,8 +409,8 @@ has tentacles => (is => 'ro', isa => PurpleTentacles);
 
         <section>
           <h2>Coercions</h2>
-          <p>No solution that worked with both Moose and Moo until recently</p>
           <p>Unlike Moose, coercions are separate from type checking</p>
+          <p>No solution that worked with both Moose and Moo until recently</p>
           <pre><code contenteditable>
 package Client;
 use Moo;
@@ -433,7 +433,7 @@ $client->uri->host;  # returns example.com
 
         <section>
           <h2>Coercions with Type::Tiny</h2>
-          <p>Type::Tiny Coercions come packaged with types (like in Moose)</p>
+          <p>Type::Tiny coercions come packaged with types (like in Moose)</p>
           <pre><code contenteditable>
 package Client;
 use Moo;
@@ -723,7 +723,7 @@ print "hi" if Thing->does('Searchable');
           <ul>
             <li>Dave Rolsky's <a href="http://www.houseabsolute.com/presentations/intro-moose-class/index.html">Intro to Moose talk</a> (slides)</li> from which this talk takes a great deal of inspiration
             <li>Matt Trout's <a href="https://www.youtube.com/watch?v=MzTWTLaUZrg">Moo presentation</a> (video) for Mongueuers de Perl</li>
-            <li>Matt Trout's <a href="https://www.youtube.com/watch?v=GzyvPqkNKYY">Moo guts presentation</a> at YAPC NA (video)</li>
+            <li>Matt Trout's <a href="https://www.youtube.com/watch?v=GzyvPqkNKYY">Moo guts presentation</a> (video) at YAPC NA</li>
             <li>Michael Hick's <a href="http://www.pl-enthusiast.net/2014/08/05/type-safety/">What is type safety?</a></li>
             <li>#moose on irc.perl.org</li>
           </ul>
